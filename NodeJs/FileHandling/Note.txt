@@ -1,0 +1,11 @@
+IN a fs package -> writeFileSync - There are create a file and also you can write some content
+Sync and Async operation - Blocking and non-blocking task/req.
+
+Sync -> Sync result ko return kar deta
+Async -> Async "excepet" karta hai hai ki callback func. ka use karoge jisme err and result use hoga, agr err ayaa to err return hoga else result return hoga.
+
+Sync -> Blocking req..(thred are blocked, so there are sync return)
+Async -> non-blocking req.. (return Async)
+
+Default Thread Pool Size = 4
+Max Thread?  - 8-core CPU → 8
