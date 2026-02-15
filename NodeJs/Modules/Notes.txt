@@ -1,0 +1,4 @@
+Modules -> When we divide my program in small parts
+Module me ek multiple file ke data or functions ko export kar ke another file me "require (import)" karke use kar sakte hai.(module.exports = function_name)
+-> Module me require karte time agr koi file import kar rahe hai to waha file ka PATH("./file_name) chahiye otherwise "BiltIn_packages" functions direct function_name use kar sakte hai.
+-> When multiple functions are return in single file there are use JS Object.

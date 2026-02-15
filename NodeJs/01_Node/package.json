@@ -1,0 +1,12 @@
+{
+  "name": "01_node",
+  "version": "1.0.0",
+  "description": "Learning Node",
+  "main": "Hello.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node Hello.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

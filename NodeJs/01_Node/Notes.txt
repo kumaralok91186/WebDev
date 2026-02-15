@@ -1,0 +1,31 @@
+Node JS runtime environment hai.
+Node js ar
+Node me only JS ka core functionality hai.
+Node ka use sever side (needed hai) per use karne ke liye hai.
+Node me se windows object and DOM func. jo UI ko manipulate karta hai use remove kar diya gaya hai. (not include)
+
+Node.js, Google Chrome ke V8 JavaScript Engine ka use karta hai.
+
+🔹 V8 Engine kya hai?
+
+V8 ek JavaScript engine hai jo Google ne banaya hai aur ye Google Chrome browser ke andar JavaScript run karta hai.
+
+Node.js bhi isi V8 engine ko use karta hai JavaScript code ko machine code me convert karne ke liye.
+
+🛠 Simple Flow Samjho:
+
+JavaScript Code → V8 Engine → Machine Code → Run on Computer
+
+Bas difference ye hai:
+
+Chrome me V8 browser ke andar run hota hai.
+
+Node.js me V8 system ke andar standalone run hota hai (server side).
+
+---------
+
+npm -> Node packet manager
+
+Project ko start karne ke liye -> npm init (create a file which are use to run file or Project)
+Package.json -> configration file hai
+We can create Package.json script there multiple js files are combine to run single script, (these are frequently use in production).
