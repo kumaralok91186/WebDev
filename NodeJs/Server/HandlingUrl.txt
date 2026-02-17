@@ -1,0 +1,14 @@
+https:www.mauryaalok.dev/
+
+https: -> Protocols (Hypertext Transfer Protocol Secure)
+www.mauryaalok.dev -> Domain - User friendly Name of IP Add. of my server 
+/ -> Path & Nested Path
+
+Query parameters -> ?
+
+// HTTP METHODS
+GET -> When you want to get some data from the server (by default browser get req. karta hai)
+POST -> When you want to send and mutate some data in server
+PUT -> When data are upload
+PATCH When existing data are manipulating or change krana
+DALATE -> Data ko delete karna
