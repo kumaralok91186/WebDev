@@ -12,3 +12,8 @@ POST -> When you want to send and mutate some data in server
 PUT -> When data are upload
 PATCH When existing data are manipulating or change krana
 DALATE -> Data ko delete karna
+
+// Express Bnifits
+Code ko clean karta hai
+Moduler karta hai
+Route ko handle karna easy kar deta hai
