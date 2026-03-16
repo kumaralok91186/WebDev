@@ -17,3 +17,45 @@ DALATE -> Data ko delete karna
 Code ko clean karta hai
 Moduler karta hai
 Route ko handle karna easy kar deta hai
+
+
+// Version
+
+4.18.3
+
+1st Part -> 4
+2nd Part -> 18
+3rd Part -> 2
+
+// 3rd Part (Last Part) - Minor Fixes (Optional)
+Latest -> 4.18.5
+
+// 2nd Part - Recommended Bug Fix (Security Fix)
+Latest -> 4.19.1
+
+// 3rd Major Release - Major / Breaking update
+5
+
+
+express = ^4.18.2
+4th Version
+
+^4.18.3 | 4.18.2 -> < 5.0.0 |
+
+^4.17.9
+4.18.1
+4.18.2
+4.18.3
+4.18.4
+
+5.1.0
+
+^ - Install all Recommended and Minor Fixes Automatically
+
+~4.18.1
+~4.18.2
+~4.18.3
+~4.18.4
+
+4.19.1 Noooo//|
+

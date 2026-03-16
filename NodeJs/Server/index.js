@@ -13,6 +13,10 @@ app.get('/about', (req, res) => {
     return res.send(`Hello ${req.query.name}`);
 });
 
+app.get("/profile", (req, res) => {
+    return res.send("Profile Page");
+});
+
 // function myHandler(req, res)  {
 //     if(req.url === "/favicon.ico") return res.end();
 //     const log = `${Date.now()}: ${req.method} New Req Received\n`
