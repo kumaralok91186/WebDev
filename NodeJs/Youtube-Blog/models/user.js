@@ -69,7 +69,7 @@ userSchema.pre("save", function (next) {
   this.salt = salt;
   this.password = hashedPassword;
 
-  next;
+  next();
 });
 
 const User = model("user", userSchema);
