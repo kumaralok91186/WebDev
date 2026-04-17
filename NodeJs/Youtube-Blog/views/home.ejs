@@ -5,225 +5,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-        }
-
-        .container {
-            padding: 0 15px;
-        }
-
-        .row {
-            display: grid;
-            gap: 20px;
-            grid-template-columns: repeat(4, 1fr);
-            padding: 20px 0;
-        }
-
-        .col {
-            display: flex;
-        }
-
-        .card {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            background: white;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
-
-        .card-img-top {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .card-body {
-            padding: 15px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-            line-height: 1.4;
-            word-wrap: break-word;
-            flex-grow: 1;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            font-size: 14px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            transition: all 0.3s ease;
-            margin-top: auto;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-
-        /* Responsive design for tablets and larger screens */
-        @media (max-width: 1200px) {
-            .row {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 18px;
-            }
-        }
-
-        /* Responsive design for tablets */
-        @media (max-width: 768px) {
-            .row {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-                padding: 15px 0;
-            }
-
-            .card-img-top {
-                height: 150px;
-            }
-
-            .card-body {
-                padding: 12px;
-            }
-
-            .card-title {
-                font-size: 15px;
-                margin-bottom: 8px;
-            }
-
-            .btn {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-
-            .container {
-                padding: 0 10px;
-            }
-        }
-
-        /* Responsive design for mobile phones */
-        @media (max-width: 480px) {
-            .row {
-                grid-template-columns: 1fr;
-                gap: 15px;
-                padding: 10px 0;
-            }
-
-            .card {
-                display: grid;
-                grid-template-columns: 120px 1fr;
-                gap: 15px;
-                padding: 12px;
-            }
-
-            .card-img-top {
-                width: 120px;
-                height: 120px;
-                border-radius: 4px;
-            }
-
-            .card-body {
-                padding: 0;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .card-title {
-                font-size: 14px;
-                margin-bottom: 8px;
-            }
-
-            .btn {
-                padding: 6px 12px;
-                font-size: 12px;
-                width: fit-content;
-            }
-
-            .container {
-                padding: 0 10px;
-                margin: 0 auto;
-                max-width: 100%;
-            }
-        }
-
-        /* Extra small screens */
-        @media (max-width: 360px) {
-            .card {
-                grid-template-columns: 100px 1fr;
-                gap: 10px;
-                padding: 10px;
-            }
-
-            .card-img-top {
-                width: 100px;
-                height: 100px;
-            }
-
-            .card-title {
-                font-size: 13px;
-            }
-
-            .btn {
-                padding: 5px 10px;
-                font-size: 11px;
-            }
-        }
-    </style>
 </head>
 <body>
-    
     <%- include('./partials/nav') %>
     
-    <div class="container">
-        <div class="row">
+    <main>
+        <h1>All Blogs</h1>
+        <div class="blog-grid">
             <% blogs.forEach(blog => { %>
-                <div class="col">
-                    <div class="card">
-                        <img src="<%= blog.coverImageURL %>" class="card-img-top" alt="<%= blog.title %>">
-                        <div class="card-body">
-                            <h5 class="card-title"><%= blog.title %></h5>
-                            <a href="/blog/<%= blog._id %>" class="btn btn-primary">View</a>
+                <div class="blog-card">
+                    <div class="blog-card-image">
+                        <img src="<%= blog.coverImageURL %>" alt="<%= blog.title %>">
+                    </div>
+                    <div class="blog-card-content">
+                        <h3 class="blog-card-title"><%= blog.title %></h3>
+                        <p class="blog-card-excerpt"><%= blog.body.substring(0, 100) %>...</p>
+                        <div class="blog-card-meta">
+                            <% 
+                                const authorName = blog.createdBy?.fullName || 'User';
+                                const avatarUrl = blog.createdBy?.profileImageURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=1e40af&color=fff&size=32`;
+                            %>
+                            <img src="<%= avatarUrl %>" alt="<%= authorName %>" class="blog-card-avatar">
+                            <span class="blog-card-author"><%= authorName %></span>
+                            <span class="blog-card-date"><%= new Date(blog.createdAt).toLocaleDateString() %></span>
                         </div>
+                        <a href="/blog/<%= blog._id %>" class="blog-card-link">Read More →</a>
                     </div>
                 </div>
             <% }) %>
         </div>
-    </div>
+    </main>
+    
+    <%- include('./partials/footer') %>
     <%- include('./partials/scripts') %>
 </body>
 </html>

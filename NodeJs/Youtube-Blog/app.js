@@ -28,7 +28,7 @@ app.use(express.static(path.resolve("./public")));
 // Routes
 app.get("/", async (req, res) => {
   try {
-    const allBlogs = await Blog.find({}).sort({ createdAt: -1 });
+    const allBlogs = await Blog.find({}).populate("createdBy", "fullName profileImageURL").sort({ createdAt: -1 });
 
     res.render("home", {
       user: req.user,

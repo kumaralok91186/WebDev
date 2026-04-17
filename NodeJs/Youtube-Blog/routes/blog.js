@@ -9,52 +9,53 @@ const Comment = require("../models/comment");
 
 const router = Router();
 
-// Constants
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+// ========================================
+// CONSTANTS
+// ========================================
+const MAX_FILE_SIZE    = 10 * 1024 * 1024; // 10MB
 const MAX_FILE_SIZE_MB = 10;
 const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".gif"];
-const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const ALLOWED_MIMES      = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
-// Magic bytes for image file signature verification
 const MAGIC_BYTES = {
   "image/jpeg": [0xFF, 0xD8, 0xFF],
-  "image/png": [0x89, 0x50, 0x4E, 0x47],
-  "image/gif": [0x47, 0x49, 0x46],
-  "image/webp": [0x52, 0x49, 0x46, 0x46], // RIFF header for WebP
+  "image/png":  [0x89, 0x50, 0x4E, 0x47],
+  "image/gif":  [0x47, 0x49, 0x46],
+  "image/webp": [0x52, 0x49, 0x46, 0x46],
 };
 
-// ✅ Cloudinary config
+// ========================================
+// CLOUDINARY CONFIG
+// ========================================
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
+  api_key:    process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
+  cloudinary,
   params: {
-    folder: "blog-covers",
+    folder:          "blog-covers",
     allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
   },
 });
 
-// File validation function
+// ========================================
+// FILE VALIDATION
+// ========================================
 const validateImageFile = (req, file, cb) => {
-  // 1. Check MIME type
   if (!ALLOWED_MIMES.includes(file.mimetype)) {
     console.warn(`[SECURITY] Invalid MIME type: ${file.mimetype} for file: ${file.originalname}`);
     return cb(new Error("Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed"));
   }
 
-  // 2. Check file extension
   const fileExt = path.extname(file.originalname).toLowerCase();
   if (!ALLOWED_EXTENSIONS.includes(fileExt)) {
     console.warn(`[SECURITY] Invalid extension: ${fileExt} for file: ${file.originalname}`);
     return cb(new Error("Invalid file extension. Only .jpg, .jpeg, .png, .webp, and .gif are allowed"));
   }
 
-  // 3. Verify magic bytes (file signature)
   const buffer = file.buffer || Buffer.alloc(0);
   const expectedBytes = MAGIC_BYTES[file.mimetype];
   if (buffer.length > 0 && expectedBytes) {
@@ -70,71 +71,68 @@ const validateImageFile = (req, file, cb) => {
 };
 
 const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: MAX_FILE_SIZE
-  },
+  storage,
+  limits:     { fileSize: MAX_FILE_SIZE },
   fileFilter: validateImageFile,
 });
 
+// ========================================
+// HELPER — extract Cloudinary public_id
+// ========================================
+const getCloudinaryPublicId = (url) => {
+  return url.split("/").slice(-2).join("/").split(".")[0]; // "blog-covers/filename"
+};
+
+// ========================================
+// ROUTES — static/specific paths FIRST
+// then dynamic /:id LAST to avoid conflicts
+// ========================================
+
+// GET /blog/add-new
 router.get("/add-new", (req, res) => {
-  if (!req.user) {
-    return res.redirect("/user/signin");
-  }
+  if (!req.user) return res.redirect("/user/signin");
   return res.render("addBlog", { user: req.user });
 });
 
-router.get("/:id", async (req, res) => {
-  const blog = await Blog.findById(req.params.id).populate("createdBy");
-  const comments = await Comment.find({ blogId: req.params.id }).populate("createdBy");
-  return res.render("blog", { user: req.user, blog, comments });
-});
-
-router.post("/comment/:blogId", async (req, res) => {
-  await Comment.create({
-    content: req.body.content,
-    blogId: req.params.blogId,
-    createdBy: req.user._id,
-  });
-  return res.redirect(`/blog/${req.params.blogId}`);
-});
-
-// Update Blogs
+// GET /blog/edit/:id
 router.get("/edit/:id", async (req, res) => {
-  if(!req.user) return res.redirect("/user/signin");
-
-  const blog = await Blog.findById(req.params.id);
-
-  if(!blog || blog.createdBy.toString() !== req.user._id.toString()) {
-    return res.status(403).send("Unauthorized");
-  }
-
-  return res.render("editBlog", {user: req.user, blog});
-});
-
-// POST - Handle update (title & body only)
-router.post("/edit/:id", upload.single("coverImage"), async (req, res) => {
   try {
-    if(!req.user) return res.status(401).send("Please signin");
+    if (!req.user) return res.redirect("/user/signin");
 
     const blog = await Blog.findById(req.params.id);
 
-    if(!blog || blog.createdBy.toString() !== req.user._id.toString()) {
+    if (!blog) return res.status(404).send("Blog not found");
+
+    if (blog.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).send("Unauthorized");
+    }
+
+    return res.render("editBlog", { user: req.user, blog });
+  } catch (error) {
+    console.error("Edit page error:", error);
+    return res.status(500).send("Error loading blog");
+  }
+});
+
+// POST /blog/edit/:id
+router.post("/edit/:id", upload.single("coverImage"), async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).send("Please sign in");
+
+    const blog = await Blog.findById(req.params.id);
+
+    if (!blog) return res.status(404).send("Blog not found");
+
+    if (blog.createdBy.toString() !== req.user._id.toString()) {
       return res.status(403).send("Unauthorized");
     }
 
     const { title, body } = req.body;
     const updateData = { title, body };
 
-    // If a new image was uploaded, delete old one from Cloudinary and update URL
     if (req.file) {
-      // Extract public_id from old Cloudinary URL to delete it
-      const oldPublicId = blog.coverImageURL
-        .split("/")
-        .slice(-2)
-        .join("/")
-        .split(".")[0]; // e.g. "blog-covers/filename"
-
+      // Delete old image from Cloudinary before updating
+      const oldPublicId = getCloudinaryPublicId(blog.coverImageURL);
       await cloudinary.uploader.destroy(oldPublicId);
       updateData.coverImageURL = req.file.path;
     }
@@ -143,34 +141,28 @@ router.post("/edit/:id", upload.single("coverImage"), async (req, res) => {
 
     return res.redirect(`/blog/${req.params.id}`);
   } catch (error) {
-    console.error("Blog updated error:", error);
+    console.error("Blog update error:", error);
     return res.status(500).send("Error updating blog: " + error.message);
   }
 });
 
-
-// Delete Router
+// POST /blog/delete/:id
 router.post("/delete/:id", async (req, res) => {
   try {
-    if(!req.user) return res.status(401).send("Please Singin");
+    if (!req.user) return res.status(401).send("Please sign in");
 
     const blog = await Blog.findById(req.params.id);
 
-    if(!blog || blog.createdBy.toString() !== req.user._id.toString()) {
+    if (!blog) return res.status(404).send("Blog not found");
+
+    if (blog.createdBy.toString() !== req.user._id.toString()) {
       return res.status(403).send("Unauthorized");
     }
 
-    // Delete cover image from Cloudinary
-    const publicId = blog.coverImageURL
-      .split("/")
-      .slice(-2)
-      .join("/")
-      .split(".")[0]; // e.g. "blog-covers/filename"
-
+    const publicId = getCloudinaryPublicId(blog.coverImageURL);
     await cloudinary.uploader.destroy(publicId);
 
-    await Comment.deleteMany({ blogId: req.params.id});
-
+    await Comment.deleteMany({ blogId: req.params.id });
     await Blog.findByIdAndDelete(req.params.id);
 
     return res.redirect("/");
@@ -178,31 +170,117 @@ router.post("/delete/:id", async (req, res) => {
     console.error("Blog delete error:", error);
     return res.status(500).send("Error deleting blog: " + error.message);
   }
-})
+});
 
+// POST /blog/comment/:blogId
+router.post("/comment/:blogId", async (req, res) => {
+  try {
+    if (!req.user) return res.redirect("/user/signin");
 
+    const { content } = req.body;
+
+    if (!content || content.trim() === "") {
+      return res.redirect(`/blog/${req.params.blogId}`);
+    }
+
+    await Comment.create({
+      content: content.trim(),
+      blogId:    req.params.blogId,
+      createdBy: req.user._id,
+    });
+
+    return res.redirect(`/blog/${req.params.blogId}`);
+  } catch (error) {
+    console.error("Comment create error:", error);
+    return res.status(500).send("Error posting comment");
+  }
+});
+
+// POST /blog/comment/update/:commentId
+router.post("/comment/update/:commentId", async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Please sign in" });
+    }
+
+    const comment = await Comment.findById(req.params.commentId);
+
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
+    }
+
+    if (comment.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
+    }
+
+    const { content } = req.body;
+
+    if (!content || content.trim() === "") {
+      return res.status(400).json({ success: false, message: "Content cannot be empty" });
+    }
+
+    await Comment.findByIdAndUpdate(
+      req.params.commentId,
+      { content: content.trim() },
+      { new: true }
+    );
+
+    return res.redirect(`/blog/${comment.blogId}`);
+  } catch (error) {
+    console.error("Comment update error:", error);
+    return res.status(500).json({ success: false, message: "Error updating comment" });
+  }
+});
+
+// POST /blog/comment/delete/:commentId
+router.post("/comment/delete/:commentId", async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Please sign in" });
+    }
+
+    const comment = await Comment.findById(req.params.commentId);
+
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
+    }
+
+    if (comment.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
+    }
+
+    const blogId = comment.blogId;
+    await Comment.findByIdAndDelete(req.params.commentId);
+
+    return res.redirect(`/blog/${blogId}`);
+  } catch (error) {
+    console.error("Comment delete error:", error);
+    return res.status(500).json({ success: false, message: "Error deleting comment" });
+  }
+});
+
+// POST /blog  (create new blog)
 router.post("/", upload.single("coverImage"), async (req, res) => {
   try {
-    const { title, body } = req.body;
-
     if (!req.user) {
-      return res.status(401).send("Please login to create a blog");
+      return res.status(401).send("Please sign in to create a blog");
     }
     if (!req.file) {
       return res.status(400).send("Cover image is required");
     }
 
+    const { title, body } = req.body;
+
     const blog = await Blog.create({
       body,
       title,
-      createdBy: req.user._id,
-      coverImageURL: req.file.path, // ✅ Cloudinary full https:// URL
+      createdBy:     req.user._id,
+      coverImageURL: req.file.path,
     });
 
     return res.redirect(`/blog/${blog._id}`);
   } catch (error) {
     console.error("Blog creation error:", error);
-    // Security validation errors
     if (error.message?.includes("Invalid") || error.message?.includes("signature")) {
       console.warn(`[SECURITY] Upload rejected for user ${req.user._id}: ${error.message}`);
       return res.status(400).send(error.message);
@@ -211,7 +289,25 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
   }
 });
 
-// Multer error handler
+// GET /blog/:id  ← MUST be last — catches any /:id pattern
+router.get("/:id", async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id).populate("createdBy");
+
+    if (!blog) return res.status(404).send("Blog not found");
+
+    const comments = await Comment.find({ blogId: req.params.id }).populate("createdBy");
+
+    return res.render("blog", { user: req.user, blog, comments });
+  } catch (error) {
+    console.error("Blog fetch error:", error);
+    return res.status(500).send("Error loading blog");
+  }
+});
+
+// ========================================
+// MULTER ERROR HANDLER
+// ========================================
 router.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
     if (error.code === "LIMIT_FILE_SIZE") {

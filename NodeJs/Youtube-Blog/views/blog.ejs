@@ -5,703 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= blog.title %> - YouBlog</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Merriweather:wght@400;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #1e40af;
-            --primary-dark: #1e3a8a;
-            --secondary: #0f766e;
-            --accent: #d97706;
-            --text-dark: #0f172a;
-            --text-light: #475569;
-            --text-gray: #64748b;
-            --border: #e2e8f0;
-            --bg-light: #f8fafc;
-            --bg-lighter: #f1f5f9;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        body {
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            color: var(--text-dark);
-            line-height: 1.8;
-        }
-
-        /* Header Section */
-        .blog-header {
-            background: linear-gradient(135deg, #1e40af 0%, #0f766e 100%);
-            color: white;
-            padding: 60px 20px 50px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(30, 64, 175, 0.2);
-        }
-
-        .blog-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="1200" height="400" fill="url(%23grid)"/></svg>');
-        }
-
-        .blog-header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%);
-        }
-
-        .blog-header-content {
-            max-width: 900px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .blog-title {
-            font-family: 'Merriweather', serif;
-            font-size: clamp(32px, 8vw, 64px);
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 20px;
-            letter-spacing: -0.02em;
-            text-shadow: 0 2px 15px rgba(0,0,0,0.15);
-        }
-
-        .blog-meta {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
-            font-size: 15px;
-            letter-spacing: 0.01em;
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .meta-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .meta-text {
-            opacity: 0.98;
-            font-weight: 500;
-        }
-
-        /* Main Content */
-        .blog-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .blog-cover {
-            width: 100%;
-            height: auto;
-            display: block;
-            border-radius: 12px;
-            margin: 60px 0 50px 0;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            animation: slideUp 0.8s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Blog Body */
-        .blog-body {
-            padding: 60px 0;
-            font-size: 18px;
-            line-height: 2;
-            color: var(--text-dark);
-            background: white;
-            padding: 60px 40px;
-            border-radius: 12px;
-            margin-bottom: 50px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-
-        .blog-body p {
-            margin-bottom: 28px;
-            text-align: justify;
-            color: var(--text-light);
-        }
-
-        .blog-body h2, .blog-body h3, .blog-body h4 {
-            font-family: 'Merriweather', serif;
-            margin: 45px 0 25px 0;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .blog-body h2 {
-            font-size: 36px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid var(--primary);
-            margin-top: 50px;
-        }
-
-        .blog-body h3 {
-            font-size: 28px;
-            color: var(--primary);
-        }
-
-        .blog-body h4 {
-            font-size: 22px;
-        }
-
-        .blog-body a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-            border-bottom: 2px solid var(--accent);
-            transition: var(--transition);
-            padding-bottom: 2px;
-        }
-
-        .blog-body a:hover {
-            color: var(--primary-dark);
-            border-bottom-color: var(--primary);
-        }
-
-        .blog-body pre {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            padding: 25px;
-            border-left: 5px solid var(--primary);
-            border-radius: 8px;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-size: 14px;
-            font-family: 'JetBrains Mono', monospace;
-            line-height: 1.7;
-            color: #1e293b;
-            margin: 30px 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .blog-body blockquote {
-            border-left: 5px solid var(--accent);
-            padding-left: 25px;
-            margin: 30px 0;
-            font-style: italic;
-            color: var(--text-gray);
-            background: var(--bg-lighter);
-            padding: 25px;
-            border-radius: 8px;
-            font-size: 18px;
-            line-height: 1.8;
-        }
-
-        .blog-body strong {
-            color: var(--text-dark);
-            font-weight: 700;
-        }
-
-        /* Divider */
-        .blog-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--border), transparent);
-            margin: 60px 0;
-        }
-
-        /* Author Card */
-        .author-section {
-            background: linear-gradient(135deg, #1e40af 0%, #0f766e 100%);
-            color: white;
-            padding: 50px;
-            border-radius: 12px;
-            margin-bottom: 70px;
-            display: flex;
-            gap: 40px;
-            align-items: center;
-            box-shadow: 0 20px 40px rgba(30, 64, 175, 0.2);
-            border: 1px solid rgba(255,255,255,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .author-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="400" height="300" fill="url(%23dots)"/></svg>');
-            opacity: 0.5;
-        }
-
-        .author-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            flex-shrink: 0;
-            border: 5px solid white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            position: relative;
-            z-index: 1;
-        }
-
-        .author-info {
-            flex-grow: 1;
-            position: relative;
-            z-index: 1;
-        }
-
-        .author-info h3 {
-            font-family: 'Merriweather', serif;
-            font-size: 26px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .author-info p {
-            font-size: 16px;
-            opacity: 0.95;
-            margin: 0;
-            font-weight: 500;
-        }
-
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 70px;
-        }
-
-        .btn {
-            padding: 14px 32px;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: var(--transition);
-            white-space: nowrap;
-            letter-spacing: 0.01em;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #1e40af 0%, #0f766e 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(30, 64, 175, 0.3);
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-warning:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(217, 119, 6, 0.3);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-sm {
-            padding: 11px 24px;
-            font-size: 15px;
-        }
-
-        /* Comments Section */
-        .comments-section {
-            background: white;
-            padding: 50px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-
-        .comments-title {
-            font-family: 'Merriweather', serif;
-            font-size: 36px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 45px;
-            padding-bottom: 15px;
-            border-bottom: 4px solid var(--primary);
-            letter-spacing: -0.02em;
-        }
-
-        /* Comment Form */
-        .comment-form {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            padding: 35px;
-            border-radius: 12px;
-            margin-bottom: 50px;
-            border: 2px solid var(--border);
-        }
-
-        .comment-form-label {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 18px;
-            display: block;
-            font-family: 'Merriweather', serif;
-        }
-
-        .comment-input-group {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .form-control {
-            flex: 1;
-            min-width: 250px;
-            padding: 14px 18px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 15px;
-            font-family: 'Poppins', sans-serif;
-            transition: var(--transition);
-            background: white;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1);
-            background: white;
-        }
-
-        .form-control::placeholder {
-            color: var(--text-gray);
-        }
-
-        /* Comments List */
-        .comment-list {
-            display: flex;
-            flex-direction: column;
-            gap: 22px;
-        }
-
-        .comment-item {
-            padding: 35px;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 12px;
-            border-left: 5px solid var(--primary);
-            transition: var(--transition);
-            border: 1px solid var(--border);
-        }
-
-        .comment-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.12);
-            border-left: 5px solid var(--accent);
-        }
-
-        .comment-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 18px;
-        }
-
-        .comment-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid var(--primary);
-            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);
-        }
-
-        .comment-author-name {
-            font-weight: 700;
-            color: var(--text-dark);
-            font-size: 17px;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .comment-content {
-            color: var(--text-light);
-            font-size: 16px;
-            line-height: 1.8;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 70px 20px;
-            color: var(--text-gray);
-        }
-
-        .empty-state-title {
-            font-family: 'Merriweather', serif;
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: var(--text-dark);
-        }
-
-        .empty-state-link a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 700;
-            border-bottom: 2px solid var(--accent);
-            transition: var(--transition);
-        }
-
-        .empty-state-link a:hover {
-            color: var(--primary-dark);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .blog-header {
-                padding: 50px 20px 40px;
-            }
-
-            .blog-title {
-                font-size: clamp(24px, 6vw, 40px);
-                margin-bottom: 20px;
-            }
-
-            .blog-meta {
-                gap: 15px;
-                font-size: 13px;
-            }
-
-            .blog-container {
-                padding: 0 15px;
-            }
-
-            .blog-body {
-                padding: 30px 0;
-                font-size: 16px;
-                line-height: 1.8;
-            }
-
-            .blog-cover {
-                margin: 40px 0 30px 0;
-            }
-
-            .author-section {
-                padding: 25px;
-                gap: 20px;
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .author-avatar {
-                width: 80px;
-                height: 80px;
-            }
-
-            .action-buttons {
-                gap: 10px;
-            }
-
-            .btn {
-                padding: 11px 20px;
-                font-size: 13px;
-            }
-
-            .comments-title {
-                font-size: 24px;
-            }
-
-            .comment-form {
-                padding: 20px;
-            }
-
-            .comment-input-group {
-                gap: 10px;
-            }
-
-            .form-control {
-                min-width: 100%;
-            }
-
-            .comment-item {
-                padding: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .blog-header {
-                padding: 40px 15px 30px;
-            }
-
-            .blog-title {
-                font-size: clamp(20px, 5vw, 28px);
-                margin-bottom: 15px;
-            }
-
-            .blog-meta {
-                gap: 12px;
-                font-size: 12px;
-                flex-direction: column;
-            }
-
-            .meta-avatar {
-                width: 35px;
-                height: 35px;
-            }
-
-            .blog-container {
-                padding: 0 12px;
-            }
-
-            .blog-body {
-                padding: 20px 0;
-                font-size: 15px;
-                line-height: 1.7;
-            }
-
-            .blog-body h2 {
-                font-size: 24px;
-            }
-
-            .blog-body h3 {
-                font-size: 19px;
-            }
-
-            .blog-cover {
-                margin: 30px 0 25px 0;
-                border-radius: 8px;
-            }
-
-            .blog-divider {
-                margin: 40px 0;
-            }
-
-            .author-section {
-                padding: 20px;
-                gap: 15px;
-            }
-
-            .author-avatar {
-                width: 70px;
-                height: 70px;
-            }
-
-            .author-info h3 {
-                font-size: 18px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-                padding: 12px 16px;
-                font-size: 14px;
-            }
-
-            .comments-title {
-                font-size: 20px;
-            }
-
-            .comment-form {
-                padding: 15px;
-                margin-bottom: 30px;
-            }
-
-            .comment-form-label {
-                font-size: 14px;
-            }
-
-            .comment-input-group {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .form-control {
-                padding: 11px 14px;
-                font-size: 14px;
-                min-width: 100%;
-            }
-
-            .comment-item {
-                padding: 15px;
-            }
-
-            .comment-avatar {
-                width: 38px;
-                height: 38px;
-            }
-
-            .comment-author-name {
-                font-size: 14px;
-            }
-
-            .comment-content {
-                font-size: 14px;
-            }
-
-            .empty-state {
-                padding: 40px 15px;
-            }
-
-            .empty-state-title {
-                font-size: 16px;
-            }
-        }
-    </style>
 </head>
 <body>
     <%- include('./partials/nav') %>
@@ -785,6 +88,19 @@
                                 <span class="comment-author-name"><%= comment.createdBy.fullName %></span>
                             </div>
                             <div class="comment-content"><%= comment.content %></div>
+                            
+                            <% if (user && comment.createdBy._id.toString() === user._id.toString()) { %>
+                                <div class="comment-actions">
+                                    <button class="comment-btn comment-btn-edit" data-comment-id="<%= comment._id %>" data-comment-content="<%= comment.content.replace(/"/g, '&quot;') %>" onclick="editCommentClick(this)">
+                                        ✏️ Edit
+                                    </button>
+                                    <form action="/blog/comment/delete/<%= comment._id %>" method="POST" style="display:inline;">
+                                        <button type="submit" class="comment-btn comment-btn-delete" onclick="return confirm('Delete this comment?')">
+                                            🗑️ Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            <% } %>
                         </div>
                     <% }) %>
                 <% } else { %>
@@ -796,6 +112,57 @@
             </div>
         </div>
     </div>
+
+    <%- include('./partials/footer') %>
+    
+    <!-- Edit Comment Modal -->
+    <!-- Edit Comment Modal -->
+    <div id="editCommentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center;">
+        <div style="background:white; border-radius:12px; padding:30px; max-width:500px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+            <h3 style="margin-bottom:20px; color:var(--text-dark); font-weight:700;">Edit Comment</h3>
+            <form id="editCommentForm" method="POST">
+                <textarea 
+                    id="editCommentContent"
+                    name="content"
+                    style="width:100%; padding:12px; border:2px solid var(--border); border-radius:8px; font-size:14px; font-family:inherit; min-height:120px; resize:vertical; margin-bottom:15px;"
+                    required
+                ></textarea>
+                <div style="display:flex; gap:10px;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">Save Changes</button>
+                    <button type="button" onclick="closeEditCommentModal()" class="btn" style="flex:1; background:#e5e7eb; color:var(--text-dark); border:none;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function editCommentClick(button) {
+            const commentId = button.getAttribute('data-comment-id');
+            const content = button.getAttribute('data-comment-content');
+            openEditCommentModal(commentId, content);
+        }
+
+        function openEditCommentModal(commentId, content) {
+            const modal = document.getElementById('editCommentModal');
+            const form = document.getElementById('editCommentForm');
+            const textarea = document.getElementById('editCommentContent');
+            
+            textarea.value = content;
+            form.action = `/blog/comment/update/${commentId}`;
+            modal.style.display = 'flex';
+        }
+
+        function closeEditCommentModal() {
+            document.getElementById('editCommentModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editCommentModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditCommentModal();
+            }
+        });
+    </script>
 
     <%- include('./partials/scripts') %>
 </body>
