@@ -36,7 +36,7 @@ if (cluster.isPrimary) {
         console.log(`Worker ${process.pid} started at http://localhost:${PORT}`);
     });
 
-    // Handle worker errors
+    // Handle worker errors :-
     process.on("error", (error) => {
         console.error(`Worker ${process.pid} error:`, error);
     });
